@@ -84,3 +84,5 @@ BUILD_MODE
 
 # TCK test artifacts
 *.jar
+build/*
+cscope.files

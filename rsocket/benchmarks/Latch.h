@@ -28,22 +28,30 @@ class Latch {
     end = high_resolution_clock::now();
   }
 
+  void start_time() {
+      start = high_resolution_clock::now();
+      started = true;
+  }
+
   bool timed_wait(milliseconds timeout) {
     return baton_.timed_wait(timeout);
   }
 
-  void post() {
-    auto const old = count_.fetch_add(1);
-    if (old == 0) {
-        start = high_resolution_clock::now();
-    }
+  void post() { post(1); }
 
-    if (old == limit_ - 1) {
-      baton_.post();
-    }
+  void post(size_t n) {
+      auto const old = count_.fetch_add(n);
+      if (old == 0 && !started) {
+          start = high_resolution_clock::now();
+          started = true;
+      }
+
+      if (old == limit_ - n) {
+          baton_.post();
+      }
   }
 
-  int elapsed_ms() {
+  long elapsed_ms() {
       auto duration = duration_cast<milliseconds>(end - start);
       return duration.count();
   }
@@ -54,4 +62,5 @@ class Latch {
   const size_t limit_{0};
   time_point<high_resolution_clock> start;
   time_point<high_resolution_clock> end;
+  bool started{false};
 };

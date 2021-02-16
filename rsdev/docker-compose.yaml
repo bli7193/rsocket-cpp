@@ -1,0 +1,15 @@
+version: '3'
+services:
+  rs-dev:
+    image: 346035243764.dkr.ecr.us-west-2.amazonaws.com/folly-builder
+    restart: always
+    user: ybuser
+    working_dir: /home/ybuser
+    container_name: rs-dev
+    network_mode: "host"
+    environment:
+      YBD_REPO: /home/ybuser/ybd
+      YB_WORKING_DIR: /home/ybuser/ybd
+    volumes:
+      - ${RS_REPO}:/home/ybuser/rsocket-cpp
+    tty: true
